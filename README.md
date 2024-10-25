@@ -52,6 +52,22 @@ Dalam proyek ini, dua pendekatan utama akan digunakan untuk mencapai tujuan dala
 
     $$R \approx U \Sigma V^T$$
 
+## Data Understanding
+
+[<img src="https://github.com/user-attachments/assets/b7f9ca5b-0aac-45ec-8935-7272ec39f1c2" alt="Movielens Kaggle Dataset" title="Movielens Kaggle Dataset" width="100%">](https://www.kaggle.com/datasets/ayushimishra2809/movielens-dataset/data)
+
+Data yang digunakan dalam proyek ini adalah *dataset* yang diambil dari Kaggle Dataset. Di bawah ini adalah informasi detail tentang *dataset* yang digunakan.
+
+|                         | Keterangan                                                                                                                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sumber                  | [Kaggle Dataset: Movielens Dataset](https://www.kaggle.com/datasets/ayushimishra2809/movielens-dataset/data 'Movielens dataset') |
+| *Usability*             | 6.47                                                                                                                                                                              |
+| Lisensi                 | Unknown                                                                      |
+| Jenis dan Ukuran Berkas | zip (2.99 MB)                                                                                                                                                                        |
+| Kategori                | Arts and Entertainment, Earth and Nature, Computer Science, Recommender Systems                                                      |
+
+Dalam dataset tersebut berisi dua (2) berkas CSV ([Comma-separated Values](https://en.wikipedia.org/wiki/Comma-separated_values 'Wikipedia - Comma-separated values')), yaitu `movies.csv`, `ratings.csv`.
+
 ## Referensi
 [1] Gomez-Uribe, C. A., & Hunt, N. (2015). The Netflix Recommender System: Algorithms, Business Value, and Innovation. ACM Transactions on Management Information Systems (TMIS), 6(4), 1-19. DOI: https://doi.org/10.1145/2843948
 
