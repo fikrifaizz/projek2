@@ -14,7 +14,43 @@ Dari permasalahan dan latar belakang di atas, proyek ini akan membuat sebuah mod
 
 ### Problem Statements
 
+Berdasarkan latar belakang yang telah dijelaskan di atas, maka diperoleh rumusan masalah yang akan diselesaikan pada proyek ini, yaitu:
+1. Bagaimana cara melakukan tahap persiapan data film, pengguna, dan rating atau penilaian agar dapat digunakan sebagai informasi untuk membuat model machine learning sistem rekomendasi?
+2. Bagaimana cara membuat model machine learning untuk sistem rekomendasi film yang akurat dan relevan bagi pengguna?
 
+### Goals
+
+Berdasarkan rumusan masalah yang telah dipaparkan di atas, maka didapatkan tujuan dari proyek ini, yaitu:
+1. Melakukan tahap persiapan data sehingga data siap digunakan pada model *machine learning* untuk sistem rekomendasi.
+2. Membuat model *machine learning* untuk sistem rekomendasi film terbaik kepada pengguna.
+
+### Solution Statements
+
+Dalam proyek ini, dua pendekatan utama akan digunakan untuk mencapai tujuan dalam membangun sistem rekomendasi yang efektif: Content-Based Filtering dan Collaborative Filtering. Kedua pendekatan ini memiliki kelebihan masing-masing dan dapat saling melengkapi dalam menghasilkan rekomendasi yang relevan dan akurat bagi pengguna.
+
+1. Content-Based Filtering
+
+  - Content-Based Filtering adalah pendekatan yang memanfaatkan karakteristik atau fitur dari item itu sendiri untuk memberikan rekomendasi kepada pengguna. Dalam konteks rekomendasi film, fitur yang relevan bisa berupa genre, sinopsis, atau aktor yang terlibat dalam film. Sistem ini akan menganalisis preferensi pengguna berdasarkan film yang sudah mereka tonton dan memberikan rekomendasi film lain dengan fitur serupa.
+
+ - Cara Kerja:
+
+    - Ekstraksi Fitur: Sistem menganalisis deskripsi atau fitur yang dimiliki oleh setiap film (misalnya, genre atau sinopsis).
+    - Kemiripan Item: Menggunakan teknik seperti TF-IDF (Term Frequency-Inverse Document Frequency) atau cosine similarity untuk menghitung kesamaan antara film yang sudah ditonton pengguna dengan film lain yang tersedia.
+    - Rekomendasi: Berdasarkan hasil perhitungan kesamaan, sistem akan merekomendasikan film yang memiliki karakteristik serupa dengan film yang disukai pengguna.
+    - Rumus yang Digunakan: Cosine Similarity
+      - Untuk mengukur kemiripan antar item (film), sering digunakan cosine similarity, yang diukur berdasarkan vektor fitur dari dua item:
+
+        $$S_c(A,B)=cos(\theta)= \frac{A \times B}{|A| |B|} = \frac{\sum^{n}{i=1} A_iB_i}{\sqrt{\sum^{n}{i=1} A^{2}{i} } \sqrt{\sum^{n}{i=1} B^{2}_{i}} }$$
+2. Collaborative Filtering
+  - Collaborative Filtering adalah pendekatan yang menggunakan data interaksi pengguna lain untuk memberikan rekomendasi. Sistem ini tidak hanya bergantung pada fitur item, tetapi juga mempelajari pola interaksi pengguna (misalnya, rating yang diberikan) dan menemukan pengguna lain yang memiliki pola serupa. Ada dua jenis collaborative filtering yang sering digunakan: User-Based Collaborative Filtering dan Item-Based Collaborative Filtering.
+  - Cara Kerja:
+      - User-Based Collaborative Filtering: Sistem mencari pengguna lain yang memiliki preferensi atau pola rating yang mirip dengan pengguna target. Jika dua pengguna memberikan rating serupa pada sejumlah film, maka film yang disukai oleh satu pengguna akan direkomendasikan kepada pengguna lainnya.
+      - Item-Based Collaborative Filtering: Sistem mencari kemiripan antar item berdasarkan rating yang diberikan oleh berbagai pengguna. Jika dua film sering mendapat rating serupa dari pengguna yang berbeda, maka film yang mirip dengan film yang sudah disukai pengguna akan direkomendasikan.
+  - Teknologi yang Digunakan: Singular Value Decomposition (SVD) : Singular Value Decomposition (SVD) adalah algoritma yang digunakan untuk memfaktorkan matriks pengguna-item dan menemukan pola laten di balik interaksi pengguna dan film. SVD digunakan untuk memprediksi rating yang belum ada (misalnya, pengguna belum menonton film tertentu).
+  - Rumus yang Digunakan: SVD
+    SVD memecah matriks rating 𝑅 menjadi tiga matriks 𝑈, $$Σ$$, dan $$𝑉^𝑇$$ :
+
+    $$R \approx U \Sigma V^T$$
 
 ## Referensi
 [1] Gomez-Uribe, C. A., & Hunt, N. (2015). The Netflix Recommender System: Algorithms, Business Value, and Innovation. ACM Transactions on Management Information Systems (TMIS), 6(4), 1-19. DOI: https://doi.org/10.1145/2843948
