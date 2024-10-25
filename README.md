@@ -76,6 +76,8 @@ Dalam dataset tersebut berisi dua (2) berkas CSV ([Comma-separated Values](https
   - `title` : Nama atau judul film yang bersangkutan
   - `genres` : Kategori film
 
+  Untuk data movies total ada 3 kolom dan 10329 baris.
+  
 - **ratings.csv**, memiliki atribut atau fitur sebagai berikut,
 
   <img src="https://github.com/user-attachments/assets/cc65a168-b900-4d02-bdad-2d07d4ffa460" alt="Deskripsi Variabel Ratings" title="Deskripsi Variabel Ratings">
@@ -104,17 +106,13 @@ Berikut adalah Visualisasi grafik frekuensi sebaran data rating pengguna terhada
 
 Secara keseluruhan, distribusi rating ini menunjukkan kecenderungan positif dari pengguna, di mana film-film yang ditonton umumnya dinilai baik (rating 3 dan ke atas), dengan sebagian besar pengguna memberikan rating 4. Pengguna cenderung memberikan rating rendah hanya pada sedikit film.
 
-## Data Preprocessing
+## Data Preprocessing dan Data Preparation
 
 Tahap pra-pemrosesan data atau data preprocessing merupakan tahap yang perlu diterapkan sebelum melakukan proses pemodelan. Tahap ini adalah teknik yang digunakan untuk mengubah data mentah (raw data) menjadi data yang bersih (clean data) yang siap untuk digunakan pada proses selanjutnya. Dalam kasus ini, tahap data preprocessing dilakukan penggabungkan data movies dan ratings berdasarkan kolom movieID.
 
-- **Penggabungan Data**  
+  - **Penggabungan Data**  
   Penggabungan dataset movies dan ratings berdasarkan kolom movieId, menggunakan fungsi merge() di Pandas. Penggabungan ini akan menggabungkan kedua dataset berdasarkan movieId.
   <img src="https://github.com/user-attachments/assets/f95393b9-5ae7-45a7-b2cb-89dd77a4004b" alt="Penggabungan Data" title="Penggabungan Data">
-
-## Data Preparation
-
-*Data preparation* adalah proses mengumpulkan, membersihkan, memformat, dan menyusun data sebelum dianalisis atau digunakan dalam model machine learning. Proses ini bertujuan untuk memastikan bahwa data berada dalam kondisi terbaik untuk diproses oleh algoritma atau metode analisis.
 
   - **Pengecekan *Missing Value***
   
@@ -126,7 +124,21 @@ Tahap pra-pemrosesan data atau data preprocessing merupakan tahap yang perlu dit
 
   - **Pengecekan Data Duplikat**
 
+    <img src="https://github.com/user-attachments/assets/b02ad4ae-bb92-4800-9d36-8391a0037959" alt="Missing Value" title="Duplikat">
+  
     Melakukan pengecekan data yang duplikat atau data yang sama pada dataframe dapat dilakukan dengan menggunakan fungsi .duplicated().sum() dan hasilnya tidak ada duplikat.
+
+  - **Penerapan TF-IDF**
+
+    Proses TF-IDF Vectorizer diterapkan pada kolom genres dari dataset movies.csv untuk menghasilkan representasi numerik dari genre film. Ini digunakan sebagai langkah penting dalam content-based filtering.
+
+  - ***Splitting Data***
+
+    Data rating dibagi menjadi train dan test set dengan rasio 75% untuk training dan 25% untuk testing. Ini penting untuk evaluasi model collaborative filtering.
+
+    ```python
+    trainset, testset = train_test_split(data, test_size=0.25) 
+    ```
 
 ## Modeling
 
@@ -142,13 +154,13 @@ ratings = ratings[:7000]
 1. **Content-based Recommendation**
     - TF-IDF Vectorizer
 
-     Term Frequency Inverse Document Frequency Vectorizer (TF-IDF Vectorizer) Algorithm merupakan algoritma yang dapat melakukan kalkulasi dan transformasi dari teks mentah menjadi representasi angka yang memiliki makna tertentu dalam bentuk matriks serta dapat digunakan dan dimengerti oleh model machine learning.
+      TF-IDF Vectorizer akan mentransformasikan teks menjadi representasi angka yang memiliki makna tertentu dalam bentuk matriks. Ukuran matriks yang diperoleh adalah sebesar 10 data genres dan 21 data genres yang sudah dipisah.
 
       <img src="https://github.com/user-attachments/assets/4f7f7b62-d09d-4855-ac23-329f51733c6b" alt="Tabel Hasil TF-IDF Vectorizer" title="Tabel Hasil TF-IDF Vectorizer">
 
     - *Cosine Similarity*
 
-     Untuk melakukan perhitungan derajat kesamaan (similarity degree) antar genres dapat dilakukan dengan teknik cosine similarity menggunakan fungsi cosine_similarity dari library sklearn.
+      Cosine Similarity akan melakukan perhitungan derajat kesamaan (similarity degree) antar judul buku. Ukuran matriks yang diperoleh adalah sebesar 10.000 data film dan 10.000 data film juga.
 
      <img src="https://github.com/user-attachments/assets/d97e55d7-3d83-4227-b7af-b6053956f5fe" alt="Tabel Hasil Cosine Similirity" title="Tabel Hasil Cosine Similirity">
 
@@ -157,6 +169,8 @@ ratings = ratings[:7000]
      Hasil pengujian sistem rekomendasi dengan pendekatan *content-based recommendation* adalah sebagai berikut.
      
      <img src="https://github.com/user-attachments/assets/d4763eb4-74cd-4374-8ff7-04f54d559427" alt="Content Based Pilih Film" title="Content Based Pilih Film">
+
+     Dapat dilihat bahwa sistem yang telah dibangun berhasil memberikan rekomendasi beberapa judul film berdasarkan input atau masukan sebuah judul film, yaitu "Toy Story (1995)", dan diperoleh beberapa judul film yang berdasarkan perhitungan sistem.
 
 2. **Collaborative Filtering Recommendation**
    - Data Preparation
@@ -169,17 +183,14 @@ ratings = ratings[:7000]
      data = Dataset.load_from_df(ratings[['userId', 'movieId', 'rating']], reader)
      ```
 
-  - Split Training Data dan Validation Data
-
-    Membagi dataset menjadi dua bagian: 75% data digunakan untuk melatih model (train set), dan 25% digunakan untuk menguji performa model (test set).
-
-    ```python
-    trainset, testset = train_test_split(data, test_size=0.25) 
-    ```
-
   - ***Model Development and Training***
 
-    Membuat model SVD dari Surprise. SVD adalah metode dekomposisi matriks yang populer untuk collaborative filtering, di mana model memfaktorkan interaksi laten antara pengguna dan film.
+    Singular Value Decomposition (SVD): Digunakan untuk memfaktorkan matriks pengguna-item menjadi matriks laten.
+
+    Parameter SVD:
+    - Latent Factors: 50 (default).
+    - Learning Rate: 0.005.
+    - Regularization: 0.02.
 
     ```python
     svd_model = SVD()
@@ -194,6 +205,19 @@ ratings = ratings[:7000]
 
     <img src="https://github.com/user-attachments/assets/9de4a545-8ed3-4ae4-90cd-540a6d537448" alt="Collaborative Filtering Recommendation" title="Collaborative Filtering Recommendation">
 
+    Berdasarkan hasil di atas, dapat dilihat bahwa sistem akan mengambil pengguna secara acak, yaitu pengguna dengan userID 1. Dapat dilihat terdapat 10 daftar buku yang direkomendasikan oleh sistem.
+
+## Evaluation
+
+1. **Content-based Recommendation**
+
+   - Precision: Menghitung seberapa banyak film yang direkomendasikan sesuai dengan preferensi pengguna. Evaluasi ini dapat dilakukan dengan memeriksa persentase rekomendasi yang cocok dengan film yang sudah disukai pengguna.
+   - Hasil: Precision untuk model content-based filtering adalah 0.80 (80%)
+
+2. **Collaborative Filtering**
+
+   - RMSE (Root Mean Square Error): Digunakan untuk mengukur seberapa jauh prediksi model terhadap rating asli pengguna. Hasil RMSE pada collaborative filtering adalah 1.0351.
+    
 ## Kesimpulan
 
 Dalam content-based filtering, kita membuat representasi fitur dari setiap item menggunakan teknik seperti TF-IDF atau CountVectorizer. Kemudian, kita menghitung kesamaan antara item yang disukai pengguna dengan item lain menggunakan cosine similarity. Item yang paling mirip dengan yang sudah disukai pengguna akan direkomendasikan. Dalam collaborative filtering, kita menggunakan algoritma seperti SVD (Singular Value Decomposition) untuk memfaktorkan matriks pengguna-item dan menemukan pola laten di balik preferensi pengguna. Ini memungkinkan kita untuk memprediksi rating yang belum diketahui dan memberikan rekomendasi film yang mungkin disukai pengguna.
