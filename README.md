@@ -48,9 +48,9 @@ Dalam proyek ini, dua pendekatan utama akan digunakan untuk mencapai tujuan dala
       - Item-Based Collaborative Filtering: Sistem mencari kemiripan antar item berdasarkan rating yang diberikan oleh berbagai pengguna. Jika dua film sering mendapat rating serupa dari pengguna yang berbeda, maka film yang mirip dengan film yang sudah disukai pengguna akan direkomendasikan.
   - Teknologi yang Digunakan: Singular Value Decomposition (SVD) : Singular Value Decomposition (SVD) adalah algoritma yang digunakan untuk memfaktorkan matriks pengguna-item dan menemukan pola laten di balik interaksi pengguna dan film. SVD digunakan untuk memprediksi rating yang belum ada (misalnya, pengguna belum menonton film tertentu).
   - Rumus yang Digunakan: SVD
-    SVD memecah matriks rating 𝑅 menjadi tiga matriks 𝑈, $$Σ$$, dan $$𝑉^𝑇$$ :
+    SVD memecah matriks rating 𝑅 menjadi tiga matriks 𝑈, $Σ$, dan $𝑉^𝑇$ :
 
-    $$R \approx U \Sigma V^T$$
+    $R \approx U \Sigma V^T$
 
 ## Data Understanding
 
@@ -125,19 +125,21 @@ Tahap pra-pemrosesan data atau data preprocessing merupakan tahap yang perlu dit
 
     Proses TF-IDF Vectorizer diterapkan pada kolom genres dari dataset movies.csv untuk menghasilkan representasi numerik dari genre film. Ini digunakan sebagai langkah penting dalam content-based filtering.
 
-  - **Pembagian Dataset (*Split Data*):**
-
-    Dataset ratings dibagi menjadi train dan test set dengan rasio 75% untuk training dan 25% untuk testing. Langkah ini diperlukan untuk evaluasi model collaborative filtering.
-
-    ```python
-    trainset, testset = train_test_split(data, test_size=0.25) 
-    ```
+  - **Pembatasan Ukuran Dataset**
 
     Dalam kasus ini data yang akan digunakan untuk proses pemodelan machine learning data akan dibatasi hanya 10.000 baris data movies dan 7000 baris data rating.
 
     ```python
     movies   = movies[:10000]
     ratings = ratings[:7000]
+    ```
+
+  - **Pembagian Dataset (*Split Data*):**
+
+    Dataset ratings dibagi menjadi train dan test set dengan rasio 75% untuk training dan 25% untuk testing. Langkah ini diperlukan untuk evaluasi model collaborative filtering.
+
+    ```python
+    trainset, testset = train_test_split(data, test_size=0.25) 
     ```
 
   - **Pembuatan Dataset untuk Library Surprise**
@@ -199,7 +201,7 @@ Dalam proyek ini, sistem rekomendasi dibangun menggunakan dua pendekatan utama, 
 
     - Pembentukan Matriks Rating: Sistem membentuk matriks rating dari data yang tersedia, di mana setiap pengguna memiliki rating pada berbagai film.
    
-    - Dekomposisi Matriks: SVD memecah matriks rating pengguna-item menjadi tiga matriks laten, yaitu U, $$Σ$$ , dan $$V^T$$.
+    - Dekomposisi Matriks: SVD memecah matriks rating pengguna-item menjadi tiga matriks laten, yaitu U, $Σ$ , dan $V^T$.
    
     - Prediksi Rating: Dengan menggunakan matriks hasil dekomposisi, sistem memprediksi rating untuk film yang belum ditonton oleh pengguna.
    
