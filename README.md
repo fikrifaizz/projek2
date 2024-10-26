@@ -106,57 +106,57 @@ Berikut adalah Visualisasi grafik frekuensi sebaran data rating pengguna terhada
 
 Secara keseluruhan, distribusi rating ini menunjukkan kecenderungan positif dari pengguna, di mana film-film yang ditonton umumnya dinilai baik (rating 3 dan ke atas), dengan sebagian besar pengguna memberikan rating 4. Pengguna cenderung memberikan rating rendah hanya pada sedikit film.
 
-## Data Preprocessing dan Data Preparation
+- **Kondisi Data**
+  - Missing Value: Tidak ada nilai kosong pada kedua dataset (isnull().sum())
+  - Data Duplikat: Tidak ada data duplikat (duplicated().sum())
+  - Outliers: Tidak ditemukan outlier pada data ratings karena sudah memiliki nilai dalam rentang yang standar (0.5 - 5).
+
+## Data Preparation
 
 Tahap pra-pemrosesan data atau data preprocessing merupakan tahap yang perlu diterapkan sebelum melakukan proses pemodelan. Tahap ini adalah teknik yang digunakan untuk mengubah data mentah (raw data) menjadi data yang bersih (clean data) yang siap untuk digunakan pada proses selanjutnya. Dalam kasus ini, tahap data preprocessing dilakukan penggabungkan data movies dan ratings berdasarkan kolom movieID.
 
   - **Penggabungan Data**  
-  Penggabungan dataset movies dan ratings berdasarkan kolom movieId, menggunakan fungsi merge() di Pandas. Penggabungan ini akan menggabungkan kedua dataset berdasarkan movieId.
-  <img src="https://github.com/user-attachments/assets/f95393b9-5ae7-45a7-b2cb-89dd77a4004b" alt="Penggabungan Data" title="Penggabungan Data">
-
-  - **Pengecekan *Missing Value***
   
-    Proses pengecekan missing value pada dataframe dapat dilakukan dengan menggunakan fungsi .isnull().sum(), sehingga diperoleh total jumlah data yang kosong atau hilang (missing).
+    Penggabungan dataset movies dan ratings berdasarkan kolom movieId, menggunakan fungsi merge() di Pandas. Penggabungan ini akan menggabungkan kedua dataset berdasarkan movieId.
 
-    <img src="https://github.com/user-attachments/assets/fd203d48-5d40-4d76-b00f-fc528805a9fe" alt="Missing Value" title="Missing Value">  
-
-    Pada dataframe gather ternyata tidak ditemukan adanya nilai null/kosong di setiap atribut/kolom.
-
-  - **Pengecekan Data Duplikat**
-
-    <img src="https://github.com/user-attachments/assets/b02ad4ae-bb92-4800-9d36-8391a0037959" alt="Missing Value" title="Duplikat">
-  
-    Melakukan pengecekan data yang duplikat atau data yang sama pada dataframe dapat dilakukan dengan menggunakan fungsi .duplicated().sum() dan hasilnya tidak ada duplikat.
+    <img src="https://github.com/user-attachments/assets/f95393b9-5ae7-45a7-b2cb-89dd77a4004b" alt="Penggabungan Data" title="Penggabungan Data">
 
   - **Penerapan TF-IDF**
 
     Proses TF-IDF Vectorizer diterapkan pada kolom genres dari dataset movies.csv untuk menghasilkan representasi numerik dari genre film. Ini digunakan sebagai langkah penting dalam content-based filtering.
 
-  - ***Splitting Data***
+  - **Pembagian Dataset (*Split Data*):**
 
-    Data rating dibagi menjadi train dan test set dengan rasio 75% untuk training dan 25% untuk testing. Ini penting untuk evaluasi model collaborative filtering.
+    Dataset ratings dibagi menjadi train dan test set dengan rasio 75% untuk training dan 25% untuk testing. Langkah ini diperlukan untuk evaluasi model collaborative filtering.
 
     ```python
     trainset, testset = train_test_split(data, test_size=0.25) 
     ```
 
+    Dalam kasus ini data yang akan digunakan untuk proses pemodelan machine learning data akan dibatasi hanya 10.000 baris data movies dan 7000 baris data rating.
+
+    ```python
+    movies   = movies[:10000]
+    ratings = ratings[:7000]
+    ```
+
+  - **Pembuatan Dataset untuk Library Surprise**
+
+    - Mengonversi dataset ratings ke dalam format yang dapat digunakan oleh library Surprise dengan rentang skala rating 0.5 hingga 5.
+
+      ```python
+       reader = Reader(rating_scale=(0.5, 5))
+       # Membuat dataset Surprise dari dataframe ratings
+       data = Dataset.load_from_df(ratings[['userId', 'movieId', 'rating']], reader)
+      ```
+    
+
 ## Modeling
 
-Tahap selanjutnya adalah proses modeling atau membuat model machine learning yang dapat digunakan sebagai sistem rekomendasi untuk menentukan rekomendasi buku yang terbaik kepada pengguna dengan beberapa algoritma sistem rekomendasi tertentu.
-
-Dalam kasus ini data yang akan digunakan untuk proses pemodelan machine learning data akan dibatasi hanya 10.000 baris data movies dan 7000 baris data rating.
-
-```python
-books   = books[:10000]
-ratings = ratings[:7000]
-```
+Dalam proyek ini, sistem rekomendasi dibangun menggunakan dua pendekatan utama, yaitu Content-Based Filtering dan Collaborative Filtering dengan algoritma SVD. Berikut adalah penjelasan detail dari kedua pendekatan:
 
 1. **Content-based Recommendation**
-    - TF-IDF Vectorizer
-
-      TF-IDF Vectorizer akan mentransformasikan teks menjadi representasi angka yang memiliki makna tertentu dalam bentuk matriks. Ukuran matriks yang diperoleh adalah sebesar 10 data genres dan 21 data genres yang sudah dipisah.
-
-      <img src="https://github.com/user-attachments/assets/4f7f7b62-d09d-4855-ac23-329f51733c6b" alt="Tabel Hasil TF-IDF Vectorizer" title="Tabel Hasil TF-IDF Vectorizer">
+   
 
     - *Cosine Similarity*
 
@@ -166,46 +166,50 @@ ratings = ratings[:7000]
 
     - Hasil *Top-N Recommendation*
 
-     Hasil pengujian sistem rekomendasi dengan pendekatan *content-based recommendation* adalah sebagai berikut.
+      Alur Kerja - Fungsi genre_recommendations:
+
+      - Input : Pengguna memasukkan judul film (misalnya, "Toy Story (1995)").
      
-     <img src="https://github.com/user-attachments/assets/d4763eb4-74cd-4374-8ff7-04f54d559427" alt="Content Based Pilih Film" title="Content Based Pilih Film">
+      - Ekstraksi Fitur: Sistem mengambil genre dari film input.
+     
+      - Penghitungan Kemiripan: Sistem menghitung cosine similarity antara film input dengan semua film lainnya dalam dataset berdasarkan vektor genre.
+     
+      - Penyortiran: Film diurutkan berdasarkan skor cosine similarity, dari yang paling mirip hingga yang paling tidak mirip.
+     
+      - Output Rekomendasi: Sistem menampilkan top-n film dengan skor kesamaan tertinggi sebagai rekomendasi kepada pengguna.
+     
+       <img src="https://github.com/user-attachments/assets/d4763eb4-74cd-4374-8ff7-04f54d559427" alt="Content Based Pilih Film" title="Content Based Pilih Film">
 
-     Dapat dilihat bahwa sistem yang telah dibangun berhasil memberikan rekomendasi beberapa judul film berdasarkan input atau masukan sebuah judul film, yaitu "Toy Story (1995)", dan diperoleh beberapa judul film yang berdasarkan perhitungan sistem.
+       Contoh Hasil Rekomendasi :
+      - Jika pengguna memasukkan "Toy Story (1995)", sistem akan merekomendasikan film-film lain dengan genre serupa, seperti Antz (1998), Toy Story 2 (1999), dan Shrek (2001).
 
-2. **Collaborative Filtering Recommendation**
-   - Data Preparation
-
-     Mengatur rentang skala rating dengan skala 0.5 hingga 5 yang akan digunakan untuk mengonfigurasi rentang skala rating dari dataset yang akan digunakan untuk melatih model rekomendasi. Ini diperlukan untuk memastikan bahwa model mengenali batas atas dan bawah dari rating yang diberikan oleh pengguna pada item (misalnya, film).
-
-     ```python
-     reader = Reader(rating_scale=(0.5, 5))
-     # Membuat dataset Surprise dari dataframe ratings
-     data = Dataset.load_from_df(ratings[['userId', 'movieId', 'rating']], reader)
-     ```
+1. **Collaborative Filtering Recommendation**
 
   - ***Model Development and Training***
 
     Singular Value Decomposition (SVD): Digunakan untuk memfaktorkan matriks pengguna-item menjadi matriks laten.
 
     Parameter SVD:
+    
     - Latent Factors: 50 (default).
     - Learning Rate: 0.005.
     - Regularization: 0.02.
 
-    ```python
-    svd_model = SVD()
-    svd_model.fit(trainset)
-    # Membuat prediksi pada testset
-    predictions = svd_model.test(testset)
-    # Menghitung akurasi model menggunakan RMSE
-    accuracy.rmse(predictions)
-    ```
+    Alur Kerja :
 
-    Dan didapatkan RMSE nya sebesar 1.0351.
+    - Pembentukan Matriks Rating: Sistem membentuk matriks rating dari data yang tersedia, di mana setiap pengguna memiliki rating pada berbagai film.
+   
+    - Dekomposisi Matriks: SVD memecah matriks rating pengguna-item menjadi tiga matriks laten, yaitu U, $$Σ$$ , dan $$V^T$$.
+   
+    - Prediksi Rating: Dengan menggunakan matriks hasil dekomposisi, sistem memprediksi rating untuk film yang belum ditonton oleh pengguna.
+   
+    - Rekomendasi Top-N: Film yang memiliki prediksi rating tertinggi direkomendasikan kepada pengguna. 
 
     <img src="https://github.com/user-attachments/assets/9de4a545-8ed3-4ae4-90cd-540a6d537448" alt="Collaborative Filtering Recommendation" title="Collaborative Filtering Recommendation">
 
-    Berdasarkan hasil di atas, dapat dilihat bahwa sistem akan mengambil pengguna secara acak, yaitu pengguna dengan userID 1. Dapat dilihat terdapat 10 daftar buku yang direkomendasikan oleh sistem.
+    Contoh hasil rekomendasi :
+
+    - Jika kita menggunakan SVD untuk prediksi, hasil rekomendasi top-n akan berupa daftar film dengan prediksi rating tertinggi, misalnya The Royal Tenenbaums (2001), Trainspotting (1996), dan Fantasia (1940).
 
 ## Evaluation
 
